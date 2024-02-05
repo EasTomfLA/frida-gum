@@ -16,7 +16,7 @@ RELAXED_DEPS = {
 }
 
 EXACT_DEPS = {
-    "frida-java-bridge": "6.2.4",
+    # "frida-java-bridge": "6.2.4",
     "frida-objc-bridge": "7.0.3",
     "frida-swift-bridge": "2.0.6"
 }
@@ -62,6 +62,33 @@ def generate_runtime(backends, arch, endian, input_dir, gum_dir, capstone_incdir
             ])
             raise EnvironmentError(message)
 
+    output_dir_str = str(output_dir)
+    print('output_dir_str:', output_dir_str)
+    if output_dir_str.find('android-arm64/frida-gum') != -1 or output_dir_str.find('android-arm/frida-gum') != -1:
+        print('making frida-gum, replace frida-java-bridge')
+        curPath = os.getcwd()
+        splits = curPath.split('bindings', 1)
+        print (splits[0])
+        cloneCMD = 'git clone git@github.com:EasTomfLA/frida-java-bridge.git ' + splits[0] + '/myfridabridge'
+        print ('cloneCMD:' + cloneCMD)
+        status = subprocess.call(cloneCMD, shell=True)
+        print ('cloneCMD ret:%d'%status)
+        # sys.exit(1)
+        src=splits[0] + "/myfridabridge/node_modules"
+        dst=output_dir_str# + "/bindings/gumjs/"
+        cmd='cp -r %s %s' % (src, dst)
+        print ('cmd:' + cmd)
+        status = subprocess.call(cmd, shell=True)
+
+        if status != 0:
+            if status < 0:
+                print("Killed by signal", status)
+                sys.exit(status)
+            else:
+                print("Command failed with return code - ", status)
+                sys.exit(status)
+        else:
+            print('copy %s passed!\n' % cmd)
 
     runtime_reldir = Path("runtime")
     runtime_srcdir = input_dir / runtime_reldir
