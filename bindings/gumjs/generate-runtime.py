@@ -67,6 +67,8 @@ def generate_runtime(backends, arch, endian, input_dir, gum_dir, capstone_incdir
     if output_dir_str.find('android-arm64/frida-gum') != -1 or output_dir_str.find('android-arm/frida-gum') != -1:
         print('making frida-gum, replace frida-java-bridge')
         curPath = os.getcwd()
+        print (curPath)
+        # curPath = /home/master/Desktop/frida/build/tmp-android-arm/frida-gum
         splits = curPath.split('bindings', 1)
         print (splits[0])
         cloneCMD = 'git clone git@github.com:EasTomfLA/frida-java-bridge.git ' + splits[0] + '/myfridabridge'
@@ -88,7 +90,9 @@ def generate_runtime(backends, arch, endian, input_dir, gum_dir, capstone_incdir
                 print("Command failed with return code - ", status)
                 sys.exit(status)
         else:
-            print('copy %s passed!\n' % cmd)
+            print('copy %s passed!\n' % (cmd))
+            # status = subprocess.call('rm -rf ' + splits[0] + '/myfridabridge')
+            print('tmp folder rm %d' % (status))
 
     runtime_reldir = Path("runtime")
     runtime_srcdir = input_dir / runtime_reldir
